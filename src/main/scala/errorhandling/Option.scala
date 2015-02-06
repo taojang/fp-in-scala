@@ -55,6 +55,6 @@ object Option {
     } yield h :: t
 
   def sequence2[A](a: List[Option[A]]): Option[List[A]] =
-    traverse(a)(x => x)
+    traverse(a)(identity)
 
 }
