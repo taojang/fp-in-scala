@@ -1,5 +1,7 @@
 package errorhandling
 
+import scala.{Either => _, Left => _, Right => _, _}
+
 trait Either[+E, +A] {
 
   def map[B](f: A => B): Either[E, B] = this match {

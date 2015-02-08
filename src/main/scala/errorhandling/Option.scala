@@ -1,5 +1,7 @@
 package errorhandling
 
+import scala.{Option => _, None => _,  _}
+
 sealed trait Option[+A] {
 
   def map[B](f: A => B): Option[B] = this match {
