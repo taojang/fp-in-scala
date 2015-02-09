@@ -30,7 +30,7 @@ trait Stream[+A] {
 
   def filter(p: A => Boolean): Stream[A] = foldRight(Empty: Stream[A])((a, b) => if (p(a)) Cons(() => a, () => b) else b)
 
-  def append(as: => Stream[A]): Stream[A] = foldRight(as)((a, b) => Cons(() => a, () => b))
+  def append[B >: A](as: => Stream[B]): Stream[B] = foldRight(as)((a, b) => Cons(() => a, () => b))
 
   def flatMap[B](f: A => Stream[B]): Stream[B] = foldRight(Empty: Stream[B])((a, b) => f(a).append(b))
 
@@ -86,7 +86,7 @@ trait Stream[+A] {
     el match {
       case (Some(e1), Some(e2)) => if (e1 == e2) true && acc else false
       case (None, Some(e2)) => false
-      case (Some(e1), None) => true
+      case _ => true
     }
   })
 
@@ -95,7 +95,9 @@ trait Stream[+A] {
     case _ => None
   })
 
-  def scanRight[B, C](b: B)(f: (A, => B) => C): Stream[C]
+  def scanRight[B](z: B)(f: (A, => B) => B): Stream[B] = foldRight(Cons(() => z, () => Empty))((a, b) => b match {
+    case s @ Cons(h, t) => Cons(() => f(a, h()), () => s)
+  })
 }
 
 case object Empty extends Stream[Nothing]
