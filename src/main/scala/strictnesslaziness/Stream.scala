@@ -89,6 +89,13 @@ trait Stream[+A] {
       case (Some(e1), None) => true
     }
   })
+
+  def tails: Stream[Stream[A]] = Stream.unfold(this)({
+    case s @ Cons(h, t) => Some((s, t()))
+    case _ => None
+  })
+
+  def scanRight[B, C](b: B)(f: (A, => B) => C): Stream[C]
 }
 
 case object Empty extends Stream[Nothing]
