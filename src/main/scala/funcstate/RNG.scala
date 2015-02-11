@@ -92,11 +92,7 @@ object SimpleRNG {
   def sequence[A](fs: List[Rand[A]]): Rand[List[A]] = { rng =>
     fs match {
       case Nil => (Nil, rng)
-      case h :: t => {
-        val (a, r) = h(rng)
-        val (a1, r1) = sequence(t)(r)
-        (a :: a1, r1)
-      }
+      case h :: t => map2(h, sequence(t))(_ :: _)(rng)
     }
   }
 
