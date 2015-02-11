@@ -73,7 +73,8 @@ object SimpleRNG {
   }
 
 
-  def ints(count: Int)(rng: RNG): (List[Int], RNG) = sequence(List.fill(count)({ r: RNG => r.nextInt }))(rng)
+  def ints(count: Int)(rng: RNG): (List[Int], RNG) =
+    sequence(List.fill(count)({ r: RNG => r.nextInt }))(rng)
   
   // def ints(count: Int)(rng: RNG): (List[Int], RNG) = {
 
