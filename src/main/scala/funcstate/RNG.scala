@@ -40,11 +40,9 @@ object SimpleRNG {
     else i / Int.MaxValue
   }
 
-  /*
-  def double(rng: RNG): (Double, RNG) = nonNegativeInt(rng) match {
-    case (n, r) => if (n == Int.MaxValue) double(r) else (n / Int.MaxValue, r)
-  }
-  */
+  // def double(rng: RNG): (Double, RNG) = nonNegativeInt(rng) match {
+  //   case (n, r) => if (n == Int.MaxValue) double(r) else (n / Int.MaxValue, r)
+  // }
 
   val randIntDouble: Rand[(Int, Double)] = both(int, double)
 
@@ -74,18 +72,21 @@ object SimpleRNG {
     ((d1, d2, d3), r3)
   }
 
-  def ints(count: Int)(rng: RNG): (List[Int], RNG) = {
 
-    def intsRecurr(c: Int)(acc: List[Int])(rng: RNG): (List[Int], RNG) = {
-      if (c < 1) (acc, rng)
-      else {
-        val (n, r) = rng.nextInt
-        intsRecurr(c - 1)(n :: acc)(r)
-      }
-    }
+  def ints(count: Int)(rng: RNG): (List[Int], RNG) = sequence(List.fill(count)({ r: RNG => r.nextInt }))(rng)
+  
+  // def ints(count: Int)(rng: RNG): (List[Int], RNG) = {
+
+  //   def intsRecurr(c: Int)(acc: List[Int])(rng: RNG): (List[Int], RNG) = {
+  //     if (c < 1) (acc, rng)
+  //     else {
+  //       val (n, r) = rng.nextInt
+  //       intsRecurr(c - 1)(n :: acc)(r)
+  //     }
+  //   }
     
-    intsRecurr(count)(Nil)(rng)
-  }
+  //   intsRecurr(count)(Nil)(rng)
+  // }
 
   def sequence[A](fs: List[Rand[A]]): Rand[List[A]] = { rng =>
     fs match {
