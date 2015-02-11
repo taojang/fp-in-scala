@@ -26,9 +26,11 @@ object SimpleRNG {
     }
 
   def map2[A,B,C](ra: Rand[A], rb: Rand[B])(f: (A, B) => C): Rand[C] = { rng =>
-    val (a, r1) = ra(rng)
-    val (b, r2) = rb(r1)
-    (f(a, b), r2)
+    // val (a, r1) = ra(rng)
+    // val (b, r2) = rb(r1)
+    // (f(a, b), r2)
+    val t = map(ra)(a => f(a, _: B))(rng)
+    map(rb)(b => t._1(b))(t._2)
   }
 
   def both[A,B](ra: Rand[A], rb: Rand[B]): Rand[(A,B)] = map2(ra, rb)((_, _))
