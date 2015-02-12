@@ -21,11 +21,13 @@ object SimpleRNG {
 
   def unit[A](a: A): Rand[A] = rng => (a, rng)
 
-  def map[A, B](s: Rand[A])(f: A => B): Rand[B] =
-    rng => {
-      val (a, rng2) = s(rng)
-      (f(a), rng2)
-    }
+  // def map[A, B](s: Rand[A])(f: A => B): Rand[B] =
+  //   rng => {
+  //     val (a, rng2) = s(rng)
+  //     (f(a), rng2)
+  //   }
+
+  def map[A, B](s: Rand[A])(f: A => B): Rand[B] = ???
 
   def map2[A,B,C](ra: Rand[A], rb: Rand[B])(f: (A, B) => C): Rand[C] = { rng =>
     // val (a, r1) = ra(rng)
@@ -33,6 +35,11 @@ object SimpleRNG {
     // (f(a, b), r2)
     val (fb, r) = map(ra)(a => f(a, _: B))(rng)
     map(rb)(b => fb(b))(r)
+  }
+
+  def flatMap[A,B](f: Rand[A])(g: A => Rand[B]): Rand[B] = { rng =>
+    val (a, r) = f(rng)
+    g(a)(r)
   }
 
   def both[A,B](ra: Rand[A], rb: Rand[B]): Rand[(A,B)] = map2(ra, rb)((_, _))
