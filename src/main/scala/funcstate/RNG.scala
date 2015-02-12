@@ -1,3 +1,5 @@
+package funcstate
+
 trait RNG {
 
   def nextInt: (Int, RNG)
@@ -29,8 +31,8 @@ object SimpleRNG {
     // val (a, r1) = ra(rng)
     // val (b, r2) = rb(r1)
     // (f(a, b), r2)
-    val t = map(ra)(a => f(a, _: B))(rng)
-    map(rb)(b => t._1(b))(t._2)
+    val (fb, r) = map(ra)(a => f(a, _: B))(rng)
+    map(rb)(b => fb(b))(r)
   }
 
   def both[A,B](ra: Rand[A], rb: Rand[B]): Rand[(A,B)] = map2(ra, rb)((_, _))
@@ -91,11 +93,14 @@ object SimpleRNG {
   //   intsRecurr(count)(Nil)(rng)
   // }
 
-  def sequence[A](fs: List[Rand[A]]): Rand[List[A]] = { rng =>
-    fs match {
-      case Nil => (Nil, rng)
-      case h :: t => map2(h, sequence(t))(_ :: _)(rng)
-    }
-  }
+  // def sequence[A](fs: List[Rand[A]]): Rand[List[A]] = { rng =>
+  //   fs match {
+  //     case Nil => (Nil, rng)
+  //     case h :: t => map2(h, sequence(t))(_ :: _)(rng)
+  //   }
+  // }
+
+  def sequence[A](fs: List[Rand[A]]): Rand[List[A]] =
+    fs.foldRight(unit(Nil: List[A]))(map2(_, _)(_ :: _))
 
 }
