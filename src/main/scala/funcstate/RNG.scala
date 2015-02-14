@@ -134,5 +134,38 @@ object FuncState {
 
   }
 
+
+  object CandyMachine {
+
+    sealed trait Input
+    case object Coin extends Input
+    case object Turn extends Input
+
+    case class Machine(locked: Boolean, candies: Int, coins: Int)
+
+    // def operate(i: Input): State[Machine, (Int, Int)] = State({
+    //   case m @ Machine(_, 0, coins) => ((coins, 0), m)
+    //   case Machine(locked, candies, coins) => i match {
+    //     case _ => ???
+    //   }
+    // })
+    
+    def operate(i: Input, m: Machine): Machine = m match {
+      case Machine(_, 0, coins) => m
+      case Machine(locked, candies, coins) => i match {
+        case Coin => if (locked) Machine(false, candies, coins + 1) else m
+        case Turn => if (locked) m else Machine(true, candies - 1, coins)
+      }
+    }
+
+    def simulateMachine(inputs: List[Input]): State[Machine, (Int, Int)] = State({ s =>
+      if (s.candies < 0 || s.coins < 0)
+        throw new Exception(s"Machine in invalid status: coins: ${s.coins}, candies: ${s.candies}")
+      else {
+        val machine = inputs.foldLeft(s)((m, i) => operate(i, m))
+        ((machine.coins, machine.candies), machine)
+      }
+    })
+  }
 }
 
